@@ -1,0 +1,13 @@
+.div-button{
+  padding-top: 5em;
+  padding-left: 25em;
+  padding-right: 15em;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.one{
+  margin: 2em;
+}
+
+
