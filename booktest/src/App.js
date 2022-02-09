@@ -45,45 +45,53 @@ function App() {
   const store = useSelector((state) => state.rooms);
   const [flagCount, setFlagCount] = useState(0);
   const [arr, setArr] = useState(defaultState);
+  console.log(arr)
 
   useEffect(() => {
-    let interval = null;
-    interval = setInterval(() => {
-      setArr(
-        arr.map((item) => {
-          if (item.count > 0) {
-            item.count = item.count - 1000;
-          } else item.status = "free";
-          return item;
-        })
-      );
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [arr]);
+    // arr.map((item)=>{
+      // if(item.status === 'reserved'){
+   
+
+      let interval = null;
+      interval = setInterval(() => {
+        setArr(
+          arr.map((item) => {
+            if (item.count > 0) {
+              item.count = item.count - 1000;
+            }else item.status = "free";
+            return item;
+          })
+        );
+      }, 1000);
+      return () => clearInterval(interval);
+    // }
+    // })
+      
+  }, [arr.count]);
 
   const handleBookRoom = async () => {
-    try {
-      arr.map(async (item) => {
-        if (item.status === "reserved") {
-          await new Promise((resolve) => setTimeout(resolve, 3000));
-          const res = Math.random() < 0.5;
-         
-            // setArr(
-            //    (res) ? 
-            //   item.status === "boocked"
-            //   return item; 
-            // : 
-            // setArr(item.status === "free");
-            // console.log("This room was booked");
-          
-            // );
-         
-          console.log("res", res);
-        }
-      });
-    } catch (err) {
-      console.log(err);
-    }
+    // try {
+      
+      setArr(
+        arr.map(async (item) => {
+          if (item.status === "reserved") {
+            // await new Promise((resolve) => setTimeout(resolve, 1000));
+            const res = Math.random() < 0.5;
+            if(res){
+              item.status = "booked"
+              item.count = 0
+            }else {
+              item.status = "free"
+              console.log("This room was booked");
+            }
+           
+          }
+          return item 
+        }) 
+      )    
+    // }catch (err) {
+      // console.log(err);
+    // }
   };
 
   const handleBook = (room) => {
