@@ -1,102 +1,139 @@
-import './App.css';
+import "./App.css";
 // import { Button } from '@mui/material';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import { makeStyles } from '@mui/styles';
-import { Button, CardActionArea, CardActions, ListItem } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { UPDATE_COUNTER } from './types';
+import { connect, useDispatch, useSelector } from "react-redux";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import { makeStyles } from "@mui/styles";
+import {
+  Button,
+  CardActionArea,
+  CardActions,
+  colors,
+  ListItem,
+} from "@mui/material";
+import { useEffect, useState } from "react";
+import { ID, UPDATE_COUNTER } from "./types";
+import { styled } from "@mui/material/styles";
+import { red } from "@mui/material/colors";
 
 const useStyles = makeStyles({
-
   root: {
     textAlign: "center",
   },
-  }) 
+  book: {
+    textAlign: "center",
+    background: "red",
+  },
+});
+
+const defaultState = [
+  { id: 1, count: 0, status: "free" },
+  { id: 2, count: 0, status: "free" },
+  { id: 3, count: 0, status: "free" },
+  { id: 4, count: 0, status: "free" },
+  { id: 5, count: 0, status: "free" },
+  { id: 6, count: 0, status: "free" },
+  { id: 7, count: 0, status: "free" },
+  { id: 8, count: 0, status: "free" },
+  { id: 9, count: 0, status: "free" },
+];
 
 function App() {
   const classes = useStyles();
   const dispatch = useDispatch();
   const store = useSelector((state) => state.rooms);
-  const [flag, setFlag] = useState(false)
-  const [count, setCount] = useState(120)
-
-  const [index, setIndex] = useState(120)
-
-  const [id, setId] = useState(0)
-
-
+  const [flagCount, setFlagCount] = useState(0);
+  const [arr, setArr] = useState(defaultState);
 
   useEffect(() => {
-    // if(flag){
-      while(index > 0){
-        // console.log('ickdmvdmvd', id)
+    let interval = null;
+    interval = setInterval(() => {
+      setArr(
+        arr.map((item) => {
+          if (item.count > 0) {
+            item.count = item.count - 1000;
+          } else item.status = "free";
+          return item;
+        })
+      );
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [arr]);
 
-      setTimeout(() => {
-        dispatch({type: UPDATE_COUNTER, payload: id})
-        setIndex(index-1)  
-
-      }, 1000)
+  const handleBookRoom = async () => {
+    try {
+      arr.map(async (item) => {
+        if (item.status === "reserved") {
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+          const res = Math.random() < 0.5;
+         
+            // setArr(
+            //    (res) ? 
+            //   item.status === "boocked"
+            //   return item; 
+            // : 
+            // setArr(item.status === "free");
+            // console.log("This room was booked");
+          
+            // );
+         
+          console.log("res", res);
+        }
+      });
+    } catch (err) {
+      console.log(err);
     }
-      // setTimeout(() => {
-        // setCount(count-1)
-      // }, 1000)
-    // }
-  }, [index])
+  };
 
-
-  const handleBook = (id1) => {
-    setId(id)
-    // console.log("time",store)
-// let index = 120
-setIndex(index-1)  
-
-        dispatch({type: UPDATE_COUNTER, payload: id1})
-
-
-    
-    // dispatch({type: UPDATE_COUNTER, payload: id})
-    if(flag)setFlag(false)
-    else setFlag(true)
-  }
+  const handleBook = (room) => {
+    dispatch({ type: ID, payload: room.id });
+    setArr(
+      arr.map((item) => {
+        if (item.id === room.id) {
+          item.count = 120000;
+          item.status = "reserved";
+        }
+        return item;
+      })
+    );
+  };
 
   return (
-    <div className='div-button'>
-      {store.map((room) => (
-        <div className='one' key={room.id}>
-
-
-    <Card sx={{ maxWidth: 200 }} className={classes.root}>
-      <CardActionArea>
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            Room #{room.id}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {room.time}
-            {/* {count} */}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-      <CardActions>
-      <Button 
-        color='success' 
-        size="large" 
-        variant="contained"
-        onClick={() => handleBook(room.id)}
-      >
-        Book
-      </Button>
-
-      </CardActions>
-    </Card>
-      </div>
-
+    <div className="div-button">
+      {arr.map((room) => (
+        <div className="one" key={room.id}>
+          <Button
+            color={
+              room.status === "reserved"
+                ? "warning"
+                : room.status === "booked"
+                ? "error"
+                : "success"
+            }
+            size="large"
+            variant="contained"
+            onClick={() => handleBook(room)}
+          >
+            {room.status === "reserved" ? room.count : room.id}
+          </Button>
+        </div>
       ))}
 
-
+      {/* {room.status === 'reserved' ? ( */}
+      <div className="div-book">
+        <Button
+          color="primary"
+          size="large"
+          variant="contained"
+          onClick={() => handleBookRoom()}
+        >
+          Book
+        </Button>
+      </div>
+      {/* ) : (
+        <></>
+      )} */}
     </div>
   );
 }
