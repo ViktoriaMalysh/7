@@ -1,31 +1,8 @@
 import "./App.css";
-// import { Button } from '@mui/material';
 import { connect, useDispatch, useSelector } from "react-redux";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import { makeStyles } from "@mui/styles";
-import {
-  Button,
-  CardActionArea,
-  CardActions,
-  colors,
-  ListItem,
-} from "@mui/material";
+import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { ID, UPDATE_COUNTER } from "./types";
-import { styled } from "@mui/material/styles";
-import { red } from "@mui/material/colors";
-
-const useStyles = makeStyles({
-  root: {
-    textAlign: "center",
-  },
-  book: {
-    textAlign: "center",
-    background: "red",
-  },
-});
+import { ID } from "./types";
 
 const defaultState = [
   { id: 1, count: 0, status: "free" },
@@ -40,58 +17,70 @@ const defaultState = [
 ];
 
 function App() {
-  const classes = useStyles();
   const dispatch = useDispatch();
   const store = useSelector((state) => state.rooms);
-  const [flagCount, setFlagCount] = useState(0);
+  const [flag, setFlag] = useState(false);
   const [arr, setArr] = useState(defaultState);
-  console.log(arr)
+  console.log(arr);
 
   useEffect(() => {
-    // arr.map((item)=>{
-      // if(item.status === 'reserved'){
-   
-
+    if (flag) {
       let interval = null;
       interval = setInterval(() => {
         setArr(
           arr.map((item) => {
             if (item.count > 0) {
               item.count = item.count - 1000;
-            }else item.status = "free";
+            } else {
+              item.status = "free";
+            }
             return item;
           })
         );
       }, 1000);
       return () => clearInterval(interval);
-    // }
-    // })
-      
-  }, [arr.count]);
+    }
+  }, [arr.count, flag]);
 
-  const handleBookRoom = async () => {
-    // try {
-      
-      setArr(
-        arr.map(async (item) => {
-          if (item.status === "reserved") {
-            // await new Promise((resolve) => setTimeout(resolve, 1000));
-            const res = Math.random() < 0.5;
-            if(res){
-              item.status = "booked"
-              item.count = 0
-            }else {
-              item.status = "free"
-              console.log("This room was booked");
-            }
-           
-          }
-          return item 
-        }) 
-      )    
-    // }catch (err) {
-      // console.log(err);
-    // }
+  useEffect(() => {
+    const p = setFlag(arr.some((elem) => elem.status === "reserved"));
+    if (!p) setFlag(false);
+  }, [arr.status]);
+
+  const handleBookRoom = () => {
+
+    function search(item) {
+      let arrBooked 
+        if (item.status === 'reserved') {
+          arrBooked.push(item)
+        
+        }
+    
+      return arrBooked;
+    }
+
+    console.log('fbgfbn', arr.filter(search))
+
+
+    // setArr(
+    //   arr.map(async (item) => {
+    //     if (item.status === "reserved") {
+    //       const res = Math.random() < 0.5;
+    //       if (res) {
+    //         item.status = "booked";
+    //         item.count = 0;
+    //         setFlag(false)
+    //         return item;
+    //       } else {
+    //         item.status = "free";
+    //         setFlag(false)
+    //         console.log("This room was booked");
+    //         return item;
+    //       }
+    //     }
+    //     return item;
+    //   })
+    // );
   };
 
   const handleBook = (room) => {
@@ -101,6 +90,7 @@ function App() {
         if (item.id === room.id) {
           item.count = 120000;
           item.status = "reserved";
+          setFlag(true);
         }
         return item;
       })
@@ -128,7 +118,7 @@ function App() {
         </div>
       ))}
 
-      {/* {room.status === 'reserved' ? ( */}
+      {flag ? (
       <div className="div-book">
         <Button
           color="primary"
@@ -139,9 +129,9 @@ function App() {
           Book
         </Button>
       </div>
-      {/* ) : (
+       ) : (
         <></>
-      )} */}
+      )} 
     </div>
   );
 }
