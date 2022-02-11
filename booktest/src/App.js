@@ -31,9 +31,7 @@ function App() {
           arr.map((item) => {
             if (item.count > 0) {
               item.count = item.count - 1000;
-            } else {
-              item.status = "free";
-            }
+            } 
             return item;
           })
         );
@@ -48,39 +46,26 @@ function App() {
   }, [arr.status]);
 
   const handleBookRoom = () => {
+    setArr(
+      arr.map(async(item) => {
+        if (item.status === "reserved") {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          const res = Math.random() < 0.5;
+          if (res) {
+            item.status = "booked"
+            item.count = 0;
+            console.log('true')
+          }else {
+            item.status = "free"
+            item.count = 0;
+            console.log('false')
+          }
+        } 
+        return item;
+      })
+    );
 
-    function search(item) {
-      let arrBooked 
-        if (item.status === 'reserved') {
-          arrBooked.push(item)
-        
-        }
-    
-      return arrBooked;
-    }
-
-    console.log('fbgfbn', arr.filter(search))
-
-
-    // setArr(
-    //   arr.map(async (item) => {
-    //     if (item.status === "reserved") {
-    //       const res = Math.random() < 0.5;
-    //       if (res) {
-    //         item.status = "booked";
-    //         item.count = 0;
-    //         setFlag(false)
-    //         return item;
-    //       } else {
-    //         item.status = "free";
-    //         setFlag(false)
-    //         console.log("This room was booked");
-    //         return item;
-    //       }
-    //     }
-    //     return item;
-    //   })
-    // );
+    console.log('newArr', arr)
   };
 
   const handleBook = (room) => {
@@ -119,19 +104,19 @@ function App() {
       ))}
 
       {flag ? (
-      <div className="div-book">
-        <Button
-          color="primary"
-          size="large"
-          variant="contained"
-          onClick={() => handleBookRoom()}
-        >
-          Book
-        </Button>
-      </div>
-       ) : (
+        <div className="div-book">
+          <Button
+            color="primary"
+            size="large"
+            variant="contained"
+            onClick={() => handleBookRoom()}
+          >
+            Book
+          </Button>
+        </div>
+      ) : (
         <></>
-      )} 
+      )}
     </div>
   );
 }
