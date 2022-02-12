@@ -2,7 +2,8 @@ import "./App.css";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { ID } from "./types";
+import { addCount } from './store/roomSlice';
+
 
 const defaultState = [
   { id: 1, count: 0, status: "free" },
@@ -19,9 +20,12 @@ const defaultState = [
 function App() {
   const dispatch = useDispatch();
   const store = useSelector((state) => state.rooms);
+
+  const persistStore = useSelector((state) => state.persist);
   const [flag, setFlag] = useState(false);
   const [arr, setArr] = useState(defaultState);
   console.log(arr);
+  console.log('persistStore', persistStore);
 
   useEffect(() => {
     if (flag) {
@@ -36,7 +40,9 @@ function App() {
           })
         );
       }, 1000);
+
       return () => clearInterval(interval);
+      
     }
   }, [arr.count, flag]);
 
@@ -69,7 +75,7 @@ function App() {
   };
 
   const handleBook = (room) => {
-    dispatch({ type: ID, payload: room.id });
+    // dispatch({ type: ID, payload: room.id });
     setArr(
       arr.map((item) => {
         if (item.id === room.id) {
@@ -80,6 +86,8 @@ function App() {
         return item;
       })
     );
+    const id = 1
+    dispatch(addCount({id}))
   };
 
   return (
