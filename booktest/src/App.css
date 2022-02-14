@@ -1,16 +1,29 @@
+.div-container{
+  display: grid;
+  grid-template-columns: 1fr 1fr  1fr 1fr 1fr;
+  grid-template-areas: '. one1 one1 one1 .'
+  ". . butt . .";
+}
+
 .div-button{
+  grid-area: one1;
   padding-top: 5em;
-  padding-left: 25em;
+  padding-left: 19em;
   padding-right: 15em;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 }
 
 .one{
-  margin: 2em;
-}
+  margin-bottom: 2em;
+}  
+
+
 
 .div-book{
-margin-left: auto;
-margin-right: auto;
+  grid-area: butt;
+  padding-left: 8em;
+  padding-right: 14em;
+/* margin-left: auto; */
+/* margin-right: auto; */
 }
