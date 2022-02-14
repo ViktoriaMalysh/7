@@ -2,9 +2,14 @@ import "./App.css";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Button } from "@mui/material";
 import { useEffect, useState } from "react";
-import { addCount, setStatus, setStatusFree, setStatusBook } from "./store/roomSlice";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
+import {
+  addCount,
+  setStatus,
+  setStatusFree,
+  setStatusBook,
+  setStatusReserved,
+} from "./store/roomSlice";
+
 const defaultState = [
   { id: 1, count: 0, end: 0, status: "free" },
   { id: 2, count: 0, end: 0, status: "free" },
@@ -23,9 +28,6 @@ function App() {
   const [reserved, setReserved] = useState(0);
   const [arr, setArr] = useState(defaultState);
 
-  console.log("state", arr);
-  console.log("state", arr);
-
   useEffect(() => {
     rooms.map((room) => {
       if (room.status === "reserved") {
@@ -37,7 +39,7 @@ function App() {
               endTime = new Date(endTime);
               let time = endTime - currentTime;
               item.count = time;
-              setReserved(reserved + 1)
+              setReserved(reserved + 1);
             }
             return item;
           })
@@ -62,14 +64,12 @@ function App() {
                 let currentTime = new Date();
                 let endTime = room.end;
                 endTime = new Date(endTime);
-                console.log("currentTime", currentTime, "endTime", endTime);
                 let time = endTime - currentTime;
-
-                console.log("time", time);
                 item.status = "reserved";
                 item.count = time;
               } else if (item.count < 0) {
                 item.status = "free";
+                setReserved(reserved - 1);
                 item.count = 0;
                 const id = room.id;
                 dispatch(setStatusFree({ id }));
@@ -89,16 +89,17 @@ function App() {
         if (item.status === "reserved") {
           await new Promise((resolve) => setTimeout(resolve, 1000));
           const res = Math.random() < 0.5;
+          const id = item.id;
           if (res) {
-            const id = item.id
-            dispatch(setStatusBook({ id }))
+            dispatch(setStatusBook({ id }));
             item.status = "booked";
+            setReserved(reserved - 1);
             item.count = 0;
-            console.log("true");
           } else {
+            dispatch(setStatusReserved({ id }));
             item.status = "free";
+            setReserved(reserved - 1);
             item.count = 0;
-            console.log("false");
           }
         }
         return item;
@@ -114,14 +115,13 @@ function App() {
 
     const countTime = 60 * 1000 * 2;
     end.setTime(end.getTime() + countTime);
-    console.log("start", start, "end", end);
 
     const bookRoom = {
       id: room.id,
       start: start,
       end: end,
     };
-    setReserved(reserved +1)
+    setReserved(reserved + 1);
     dispatch(addCount({ bookRoom }));
     setArr(
       arr.map((item) => {
@@ -156,8 +156,7 @@ function App() {
           </div>
         ))}
       </div>
-      {/* {arr.map((room) => ( */}
-        {reserved !==0 ? (
+      {reserved !== 0 ? (
         <div className="div-book">
           <Button
             color="primary"
@@ -167,12 +166,10 @@ function App() {
           >
             Book
           </Button>
-        </div>) : (<></>)}
-      {/* ) : (
+        </div>
+      ) : (
         <></>
-      )
-      ))} */}
-      
+      )}
     </div>
   );
 }

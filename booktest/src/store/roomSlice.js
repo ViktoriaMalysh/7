@@ -35,6 +35,14 @@ const roomSlice = createSlice({
         }
       });
     },
+    setStatusReserved(state, action) {
+      console.log(action.payload.id);
+      state.rooms.map((room) => {
+        if (room.id === action.payload.id) {
+          Object.assign(room, { status: "reserved", start: "", end: "" });
+        }
+      });
+    },
     setStatusFree(state, action) {
       console.log(action.payload.id);
       state.rooms.map((room) => {
@@ -54,6 +62,6 @@ const roomSlice = createSlice({
   },
 });
 
-export const { addCount, setStatus, setStatusFree, setStatusBook } = roomSlice.actions;
+export const { addCount, setStatus, setStatusFree, setStatusReserved, setStatusBook } = roomSlice.actions;
 
 export default roomSlice.reducer;
